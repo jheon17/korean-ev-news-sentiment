@@ -1,0 +1,29 @@
+7단계 OpenAI GPT API 평가 리포트
+
+평가 범위: dev 데이터만 사용
+평가 기사 수: 28
+정답 수: 18
+분류 실패 수: 0
+Accuracy: 0.643
+Macro-F1: 0.653
+
+클래스별 지표:
+- 긍정: Precision 1.000, Recall 0.571, F1 0.727
+- 중립: Precision 0.231, Recall 1.000, F1 0.375
+- 부정: Precision 1.000, Recall 0.750, F1 0.857
+
+혼동행렬:
+gold_label \ pred_label,긍정,중립,부정
+긍정,12,9,0
+중립,0,3,0
+부정,0,1,3
+
+예측 라벨 분포:
+- 긍정: 12
+- 중립: 13
+- 부정: 3
+
+모델: gpt-5.6-luna
+프롬프트 버전: v1
+출력 형식: Structured Outputs JSON Schema
+예측 파일 누적 추정 비용: 약 8.3268원

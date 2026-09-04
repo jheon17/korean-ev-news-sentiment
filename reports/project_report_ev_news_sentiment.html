@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>전기차 뉴스 감성 분류 프로젝트 보고서</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 15mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #1f2933;
+      background: #f5f7fa;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px;
+      background: #ffffff;
+    }
+
+    header {
+      border-bottom: 3px solid #1b4d3e;
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      color: #4b5563;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      margin: 0 0 6px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      color: #16392f;
+      font-size: 30px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 34px 0 12px;
+      color: #16392f;
+      font-size: 21px;
+      border-bottom: 1px solid #d9e2ec;
+      padding-bottom: 6px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 22px 0 8px;
+      color: #243b53;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    ul, ol {
+      margin: 8px 0 12px 22px;
+      padding: 0;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .meta div, .callout, .metric {
+      border: 1px solid #d9e2ec;
+      border-radius: 6px;
+      padding: 12px;
+      background: #fbfdff;
+    }
+
+    .label {
+      color: #627d98;
+      display: block;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      color: #102a43;
+      font-weight: 700;
+    }
+
+    .summary {
+      border-left: 4px solid #1b4d3e;
+      padding: 12px 16px;
+      background: #f0f7f4;
+      margin: 12px 0 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .metric strong {
+      display: block;
+      color: #102a43;
+      font-size: 22px;
+      line-height: 1.2;
+      margin-top: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 8px 9px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef3f8;
+      color: #243b53;
+      text-align: left;
+    }
+
+    td.num, th.num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 70px;
+      gap: 10px;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    .bar-track {
+      height: 18px;
+      background: #e6edf3;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      background: #1b4d3e;
+    }
+
+    .bar.alt {
+      background: #5b6c5d;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .step {
+      min-height: 92px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px;
+      background: #fbfdff;
+    }
+
+    .step strong {
+      display: block;
+      color: #16392f;
+      margin-bottom: 4px;
+    }
+
+    code {
+      background: #eef3f8;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .small {
+      color: #52616b;
+      font-size: 12px;
+    }
+
+    .note {
+      background: #fff8e6;
+      border-left: 4px solid #b7791f;
+      padding: 10px 14px;
+      margin: 12px 0;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      h2 {
+        break-after: avoid;
+      }
+
+      table, .callout, .metric, .step {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">프로젝트 보고서</p>
+      <h1>전기차 뉴스 감성 분류: 공개 뉴스 기반 방법론 재구현</h1>
+      <p>
+        네이버 뉴스 검색 API로 수집한 전기차 관련 한국어 뉴스의 제목과 요약문을 이용해
+        국내 전기차 시장 전체에 미칠 영향을 긍정, 중립, 부정으로 분류한 학습 프로젝트다.
+      </p>
+      <div class="meta">
+        <div><span class="label">작성일</span><span class="value">2026년 8월 3일</span></div>
+        <div><span class="label">분석 범위</span><span class="value">한국어 뉴스, 국내 시장 기준</span></div>
+        <div><span class="label">평가 기준</span><span class="value">dev 데이터 28건</span></div>
+      </div>
+    </header>
+
+    <section>
+      <h2>요약: 무엇을 만들었고 어디까지 확인했나</h2>
+      <div class="summary">
+        <p><strong>이 프로젝트의 목표는 뉴스 문장의 분위기가 아니라, 뉴스가 국내 전기차 시장의 수요·보급·등록대수에 줄 예상 영향을 분류하는 것이다.</strong></p>
+        <p>공개 뉴스 검색 결과를 수집하고, 원본 보존과 전처리를 거친 뒤, 사람이 만든 정답 라벨을 기준으로 세 가지 분류 방식을 비교했다.</p>
+        <p>현재 dev 데이터 기준으로는 GPT API 모델이 가장 좋은 성능을 보였다. Accuracy는 0.643, Macro-F1은 0.653이었다.</p>
+      </div>
+
+      <div class="grid">
+        <div class="metric"><span class="label">원본 수집 기사</span><strong>60건</strong><span class="small">검색어 6개 x 10건</span></div>
+        <div class="metric"><span class="label">전처리 후 기사</span><strong>35건</strong><span class="small">원문 링크 기준 중복 제거</span></div>
+        <div class="metric"><span class="label">GPT API 누적 추정 비용</span><strong>약 8.33원</strong><span class="small">dev 28건 분류 기준</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>초심자를 위한 핵심 개념</h2>
+      <h3>감성은 기분이 아니라 시장 영향이다</h3>
+      <p>
+        일반적인 감성 분석은 문장이 밝은지 어두운지 판단하는 경우가 많다.
+        이 프로젝트에서는 다르게 본다. 기준은 “이 뉴스가 국내 전기차 시장에 좋은 조건을 만드는가,
+        나쁜 조건을 만드는가, 아니면 영향이 불명확한가”다.
+      </p>
+      <table>
+        <thead>
+          <tr><th>라벨</th><th>뜻</th><th>예시</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>긍정</td><td>전기차 수요, 보급, 등록 증가 가능성을 높이는 뉴스</td><td>보조금 확대, 충전소 확대, 가격 인하, 배터리 안전성 개선</td></tr>
+          <tr><td>중립</td><td>영향이 불명확하거나 단순 사실 전달에 가까운 뉴스</td><td>행사 소개, 해외 시장 중심 기사, 특정 기업 소식</td></tr>
+          <tr><td>부정</td><td>수요 감소 또는 위험 증가 가능성을 높이는 뉴스</td><td>화재, 리콜, 보조금 축소, 충전 불편, 비용 상승</td></tr>
+        </tbody>
+      </table>
+
+      <h3>왜 사람 정답 라벨이 필요한가</h3>
+      <p>
+        모델이 예측한 결과가 맞는지 판단하려면 비교 대상이 필요하다.
+        그 비교 대상이 사람이 직접 붙인 <code>gold_label</code>이다.
+        모델 결과는 <code>pred_label</code>로 저장하고, 두 값을 비교해 성능을 계산한다.
+      </p>
+    </section>
+
+    <section>
+      <h2>프로젝트 진행 과정</h2>
+      <div class="flow">
+        <div class="step"><strong>1. 문제 정의</strong>국내 전기차 시장 전체 영향으로 라벨 기준을 고정했다.</div>
+        <div class="step"><strong>2. API 연결</strong>네이버 뉴스 검색 API 연결을 10건 호출로 확인했다.</div>
+        <div class="step"><strong>3. 데이터 수집</strong>검색어 6개로 각 10건씩, 총 60건을 저장했다.</div>
+        <div class="step"><strong>4. 전처리</strong>HTML 태그 제거, 날짜 통일, 중복 제거를 수행했다.</div>
+        <div class="step"><strong>5. 정답 라벨</strong>사람이 긍정·중립·부정 라벨과 판단 이유를 입력했다.</div>
+      </div>
+      <div class="flow">
+        <div class="step"><strong>6. 기준 모델</strong>간단한 키워드 규칙 모델을 만들었다.</div>
+        <div class="step"><strong>7. 모델 확장</strong>Qwen 로컬 모델과 GPT API 모델을 구현했다.</div>
+        <div class="step"><strong>8. 평가</strong>Accuracy, Macro-F1, 클래스별 지표를 비교했다.</div>
+        <div class="step"><strong>9. 오류 분석</strong>GPT 오분류를 유형별로 분류했다.</div>
+        <div class="step"><strong>다음 단계</strong>프롬프트 v2를 실행하고 최종 테스트를 마지막에만 사용한다.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>데이터와 전처리 결과</h2>
+      <p>
+        네이버 API는 다운로드형 CSV가 아니라 검색 API다.
+        따라서 검색어, 수집일, 제목, 요약문, 원문 링크, 발행일을 직접 저장했다.
+        기사 본문 전체는 임의로 크롤링하지 않았다.
+      </p>
+      <table>
+        <thead>
+          <tr><th>단계</th><th class="num">건수</th><th>해석</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>원본 수집</td><td class="num">60</td><td>검색어 6개를 각 10건씩 날짜순으로 수집했다.</td></tr>
+          <tr><td>전처리 후</td><td class="num">35</td><td>원문 링크 기준 중복 25건을 제거했다.</td></tr>
+          <tr><td>개발용(dev)</td><td class="num">28</td><td>프롬프트와 모델 개선에 사용할 수 있는 데이터다.</td></tr>
+          <tr><td>최종 테스트용(final_test)</td><td class="num">7</td><td>마지막 평가 전까지 사용하지 않는다.</td></tr>
+        </tbody>
+      </table>
+
+      <p>
+        dev 라벨 분포는 긍정 21건, 중립 3건, 부정 4건이다.
+        긍정이 많기 때문에 Accuracy만 보면 모델 성능을 과대평가할 수 있다.
+      </p>
+    </section>
+
+    <section>
+      <h2>모델별 결과: GPT API가 현재 가장 안정적이다</h2>
+      <p>
+        세 모델을 dev 데이터 기준으로 비교했다.
+        Accuracy는 전체 정답률이고, Macro-F1은 긍정·중립·부정을 균형 있게 맞혔는지 보는 지표다.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>모델</th><th class="num">평가 기사 수</th><th class="num">분류 실패</th><th class="num">Accuracy</th><th class="num">Macro-F1</th><th>해석</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>키워드 규칙</td><td class="num">28</td><td class="num">0</td><td class="num">0.429</td><td class="num">0.263</td><td>출발점으로는 유용하지만 문맥 이해가 약하다.</td></tr>
+          <tr><td>Qwen 로컬</td><td class="num">24</td><td class="num">4</td><td class="num">0.292</td><td class="num">0.381</td><td>부정 일부를 맞혔지만 중립 예측과 JSON 실패가 많다.</td></tr>
+          <tr><td>GPT API</td><td class="num">28</td><td class="num">0</td><td class="num">0.643</td><td class="num">0.653</td><td>현재 비교군 중 가장 높지만 긍정을 중립으로 낮춰 보는 경향이 있다.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Accuracy 비교</h3>
+      <div class="bar-row"><span>키워드 규칙</span><div class="bar-track"><div class="bar" style="width:42.9%"></div></div><span>0.429</span></div>
+      <div class="bar-row"><span>Qwen 로컬</span><div class="bar-track"><div class="bar" style="width:29.2%"></div></div><span>0.292</span></div>
+      <div class="bar-row"><span>GPT API</span><div class="bar-track"><div class="bar" style="width:64.3%"></div></div><span>0.643</span></div>
+
+      <h3>Macro-F1 비교</h3>
+      <div class="bar-row"><span>키워드 규칙</span><div class="bar-track"><div class="bar alt" style="width:26.3%"></div></div><span>0.263</span></div>
+      <div class="bar-row"><span>Qwen 로컬</span><div class="bar-track"><div class="bar alt" style="width:38.1%"></div></div><span>0.381</span></div>
+      <div class="bar-row"><span>GPT API</span><div class="bar-track"><div class="bar alt" style="width:65.3%"></div></div><span>0.653</span></div>
+    </section>
+
+    <section>
+      <h2>GPT API 상세 결과와 의미</h2>
+      <p>
+        GPT API 모델은 <code>gpt-5.6-luna</code>를 사용했고, 출력은 JSON Schema로 고정했다.
+        즉 모델이 자유 문장을 길게 쓰더라도 최종 결과는 <code>label</code>, <code>confidence</code>,
+        <code>reason</code>, <code>evidence</code> 형식으로 받도록 설계했다.
+      </p>
+      <table>
+        <thead>
+          <tr><th>라벨</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th>해석</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>긍정</td><td class="num">1.000</td><td class="num">0.571</td><td class="num">0.727</td><td>긍정이라고 예측한 것은 정확했지만, 실제 긍정 중 일부를 중립으로 놓쳤다.</td></tr>
+          <tr><td>중립</td><td class="num">0.231</td><td class="num">1.000</td><td class="num">0.375</td><td>실제 중립은 모두 맞혔지만, 긍정·부정을 중립으로 과하게 분류했다.</td></tr>
+          <tr><td>부정</td><td class="num">1.000</td><td class="num">0.750</td><td class="num">0.857</td><td>부정 예측은 안정적이었지만 부정 1건을 중립으로 놓쳤다.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>GPT API 혼동행렬</h3>
+      <table>
+        <thead>
+          <tr><th>실제 \ 예측</th><th class="num">긍정</th><th class="num">중립</th><th class="num">부정</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>긍정</td><td class="num">12</td><td class="num">9</td><td class="num">0</td></tr>
+          <tr><td>중립</td><td class="num">0</td><td class="num">3</td><td class="num">0</td></tr>
+          <tr><td>부정</td><td class="num">0</td><td class="num">1</td><td class="num">3</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>중요한 해석:</strong> GPT API는 틀릴 때 주로 긍정이나 부정을 중립으로 낮춰 판단했다.
+        이는 프롬프트에 “근거가 부족하면 중립”이라는 안전한 기준을 넣었기 때문이다.
+      </div>
+    </section>
+
+    <section>
+      <h2>프롬프트 반복 개선은 이렇게 작동한다</h2>
+      <p>
+        프롬프트 반복 개선은 틀린 사례를 보고 기준을 조금씩 명확히 만드는 과정이다.
+        무작정 좋은 문장을 추가하는 것이 아니라, dev 데이터의 오류 유형을 보고 고친다.
+      </p>
+      <ol>
+        <li><strong>v1 프롬프트로 분류한다.</strong> 국내 시장 전체 영향이 불명확하면 중립으로 두는 보수적 기준이었다.</li>
+        <li><strong>오분류를 모은다.</strong> GPT API dev 결과에서 10건의 오분류가 확인됐다.</li>
+        <li><strong>오류 유형을 나눈다.</strong> 긍정 개선 요소를 중립으로 과소평가한 사례가 6건으로 가장 많았다.</li>
+        <li><strong>프롬프트 v2를 만든다.</strong> 충전, 안전, 고객 지원, 라인업 확대 같은 구매·이용 조건 개선은 긍정 후보라고 명시했다.</li>
+        <li><strong>v2를 다시 평가한다.</strong> v2가 긍정 Recall을 높이는지, 대신 중립 오판을 늘리지는 않는지 비교한다.</li>
+      </ol>
+
+      <table>
+        <thead>
+          <tr><th>오류 유형</th><th class="num">건수</th><th>프롬프트 개선 방향</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>긍정 개선 요소를 중립으로 과소평가</td><td class="num">6</td><td>구매·이용 조건 개선은 직접 등록 증가가 없어도 긍정 후보로 본다.</td></tr>
+          <tr><td>국내 기준과 해외 시장 영향 혼재</td><td class="num">3</td><td>해외 시장 중심 뉴스는 국내 영향이 드러나지 않으면 중립으로 본다.</td></tr>
+          <tr><td>부정 위험을 중립으로 과소평가</td><td class="num">1</td><td>비용·안전·정책 위험은 소비자 신뢰 하락 가능성을 더 강하게 본다.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>한계와 주의점</h2>
+      <ul>
+        <li><strong>데이터가 작다.</strong> 현재 전처리 후 35건이고, dev 평가는 28건이다. 최종 성능을 단정하기에는 작다.</li>
+        <li><strong>제목과 요약문만 사용했다.</strong> 본문 전체 맥락이 없어서 라벨이 애매한 기사가 생길 수 있다.</li>
+        <li><strong>검색어 편향이 있다.</strong> 예를 들어 배터리 화재 검색어는 부정 뉴스 비중을 높일 수 있다.</li>
+        <li><strong>dev 데이터에 과적합될 수 있다.</strong> 프롬프트를 dev 오류에 맞춰 고치면 dev 점수는 좋아져도 새 데이터에서는 나빠질 수 있다.</li>
+        <li><strong>final_test는 아직 사용하지 않았다.</strong> 마지막 평가 전까지 열어보거나 프롬프트 개선에 사용하면 안 된다.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>앞으로 같은 방식을 따르면 어떤 결과를 기대할 수 있나</h2>
+      <p>
+        이 방식은 완성형 모델 하나를 바로 만드는 것이 아니라,
+        공개 데이터 기반으로 분류 기준과 평가 체계를 재현 가능하게 쌓아가는 접근이다.
+      </p>
+      <ol>
+        <li><strong>데이터를 100~200건 이상으로 늘린다.</strong> 라벨 분포가 더 안정되면 평가 지표 신뢰도가 높아진다.</li>
+        <li><strong>v2 프롬프트를 dev 데이터에 실행한다.</strong> 긍정 Recall이 개선되는지, 중립 Precision이 더 나빠지지 않는지 본다.</li>
+        <li><strong>오류 분석을 한 번 더 반복한다.</strong> 새 오류 유형이 생기면 v3 후보를 만든다.</li>
+        <li><strong>프롬프트가 고정되면 final_test로 마지막 평가를 한다.</strong> 이 점수가 실제 프로젝트 성능에 더 가깝다.</li>
+        <li><strong>개별 분류가 검증된 뒤 월별 감성 지수를 만든다.</strong> 예를 들어 `(긍정 기사 수 - 부정 기사 수) / 전체 기사 수`로 계산할 수 있다.</li>
+      </ol>
+      <p>
+        기대 결과는 “뉴스 수집, 전처리, 사람 라벨, 모델 예측, 평가, 오류 분석, 프롬프트 개선”이
+        하나의 재현 가능한 파이프라인으로 남는 것이다.
+        포트폴리오에서는 단순히 GPT를 호출했다는 점보다,
+        정답 데이터와 평가 지표로 모델을 검증했다는 점이 핵심 성과다.
+      </p>
+    </section>
+
+    <section>
+      <h2>산출물과 재현 방법</h2>
+      <table>
+        <thead>
+          <tr><th>구분</th><th>파일</th><th>역할</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>라벨 기준</td><td><code>docs/label_guide.md</code></td><td>긍정·중립·부정 판단 기준</td></tr>
+          <tr><td>수집 코드</td><td><code>src/collect_news_sample.py</code></td><td>네이버 뉴스 검색 API 샘플 수집</td></tr>
+          <tr><td>전처리 코드</td><td><code>src/preprocess_news.py</code></td><td>HTML 제거, 날짜 변환, 중복 제거</td></tr>
+          <tr><td>라벨링 데이터</td><td><code>data/labels/news_labeling_sample_20260803.csv</code></td><td>사람 정답 라벨</td></tr>
+          <tr><td>기준 모델</td><td><code>src/rule_based_baseline.py</code></td><td>키워드 규칙 분류</td></tr>
+          <tr><td>Qwen 모델</td><td><code>src/qwen_local_classifier.py</code></td><td>로컬 오픈소스 모델 분류</td></tr>
+          <tr><td>GPT API 모델</td><td><code>src/openai_gpt_classifier.py</code></td><td>JSON 고정 출력 기반 GPT 분류</td></tr>
+          <tr><td>오류 분석</td><td><code>src/analyze_misclassifications.py</code></td><td>GPT 오분류 유형화</td></tr>
+        </tbody>
+      </table>
+
+      <h3>주요 실행 명령</h3>
+      <p><code>python src/collect_news_sample.py</code></p>
+      <p><code>python src/preprocess_news.py</code></p>
+      <p><code>python src/rule_based_baseline.py</code></p>
+      <p><code>python src/qwen_local_classifier.py --split dev --limit 0 --allow-omp-duplicate</code></p>
+      <p><code>python src/openai_gpt_classifier.py --run --split dev --limit 0 --max-krw 10000</code></p>
+      <p><code>python src/analyze_misclassifications.py</code></p>
+    </section>
+
+    <section>
+      <h2>최종 결론</h2>
+      <p>
+        현재 단계의 결론은 명확하다. 키워드 규칙과 Qwen 로컬 모델보다 GPT API 모델이 dev 데이터에서 더 안정적인 성능을 보였다.
+        그러나 GPT API도 긍정적인 시장 개선 요소를 중립으로 판단하는 경향이 있어, 프롬프트 v2를 통한 반복 개선이 필요하다.
+      </p>
+      <p>
+        이 프로젝트는 공개 뉴스 기반 전기차 시장 감성 분류를 재구현하는 학습 프로젝트로서,
+        데이터 수집부터 평가와 오류 분석까지의 전체 흐름을 갖췄다.
+        다음 성과 목표는 v2 프롬프트 평가, 라벨 데이터 확대, final_test 최종 평가, 월별 감성 지수 생성이다.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
