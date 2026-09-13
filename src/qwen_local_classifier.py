@@ -110,7 +110,7 @@ def load_qwen_model(model_name: str):
     return tokenizer, model, device
 
 
-def classify_with_qwen(tokenizer, model, device: str, row: dict, max_new_tokens: int) -> tuple[dict, str]:
+def generate_with_qwen(tokenizer, model, device: str, row: dict, max_new_tokens: int) -> str:
     import torch
 
     messages = [
@@ -129,10 +129,7 @@ def classify_with_qwen(tokenizer, model, device: str, row: dict, max_new_tokens:
         )
 
     generated_ids = generated_ids[:, inputs.input_ids.shape[1] :]
-    output_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
-    result = extract_json(output_text)
-    validate_result(result)
-    return result, output_text
+    return tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
 
 def main() -> None:
@@ -173,8 +170,12 @@ def main() -> None:
     prediction_rows = []
 
     for index, row in enumerate(selected_rows, start=1):
+        raw_output = ""
+
         try:
-            result, raw_output = classify_with_qwen(tokenizer, model, device, row, args.max_new_tokens)
+            raw_output = generate_with_qwen(tokenizer, model, device, row, args.max_new_tokens)
+            result = extract_json(raw_output)
+            validate_result(result)
             pred_label = result["label"]
             confidence = result["confidence"]
             reason = result["reason"]
@@ -185,7 +186,6 @@ def main() -> None:
             confidence = ""
             reason = ""
             evidence = ""
-            raw_output = locals().get("raw_output", "")
             error = str(exception)
 
         prediction_rows.append(
