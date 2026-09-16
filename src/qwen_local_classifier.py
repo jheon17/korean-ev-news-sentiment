@@ -4,7 +4,7 @@ import os
 import re
 from pathlib import Path
 
-from evaluation_utils import LABELS, calculate_metrics, read_csv, save_csv, save_report
+from evaluation_utils import LABELS, add_run_suffix, calculate_metrics, read_csv, save_csv, save_report
 
 
 LABEL_FILENAME = "news_labeling_sample_20260803.csv"
@@ -207,8 +207,8 @@ def main() -> None:
         )
         print(f"- {index}/{len(selected_rows)} {row.get('article_id', '')}: {pred_label}")
 
-    prediction_path = prediction_dir / PREDICTION_FILENAME
-    report_path = report_dir / REPORT_FILENAME
+    prediction_path = prediction_dir / add_run_suffix(PREDICTION_FILENAME, args.split, args.limit)
+    report_path = report_dir / add_run_suffix(REPORT_FILENAME, args.split, args.limit)
     save_csv(
         prediction_path,
         prediction_rows,

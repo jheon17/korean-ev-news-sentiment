@@ -18,6 +18,18 @@ def save_csv(csv_path: Path, rows: list[dict], fieldnames: list[str]) -> None:
         writer.writerows(rows)
 
 
+def add_run_suffix(filename: str, split: str, limit: int) -> str:
+    if split == "dev" and limit == 0:
+        return filename
+
+    run_suffix = f"_{split}"
+    if limit > 0:
+        run_suffix += f"_limit{limit}"
+
+    path = Path(filename)
+    return str(path.with_name(f"{path.stem}{run_suffix}{path.suffix}"))
+
+
 def calculate_metrics(rows: list[dict], split: str = "dev") -> dict:
     selected_rows = rows if split == "all" else [row for row in rows if row.get("split") == split]
 

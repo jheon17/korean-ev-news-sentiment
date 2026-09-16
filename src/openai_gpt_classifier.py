@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 from check_naver_api import load_env_file
-from evaluation_utils import LABELS, calculate_metrics, read_csv, save_csv, save_report
+from evaluation_utils import LABELS, add_run_suffix, calculate_metrics, read_csv, save_csv, save_report
 
 
 LABEL_FILENAME = "news_labeling_sample_20260803.csv"
@@ -217,7 +217,7 @@ def sum_estimated_cost_krw(rows: list[dict]) -> float:
     return total
 
 
-def get_output_paths(project_root: Path, prompt_version: str) -> tuple[Path, Path]:
+def get_output_paths(project_root: Path, prompt_version: str, split: str, limit: int) -> tuple[Path, Path]:
     prediction_dir = project_root / "data" / "predictions"
     report_dir = project_root / "reports"
 
@@ -227,6 +227,9 @@ def get_output_paths(project_root: Path, prompt_version: str) -> tuple[Path, Pat
     else:
         prediction_filename = f"openai_gpt_{prompt_version}_predictions_20260803.csv"
         report_filename = f"openai_gpt_{prompt_version}_report_20260803.txt"
+
+    prediction_filename = add_run_suffix(prediction_filename, split, limit)
+    report_filename = add_run_suffix(report_filename, split, limit)
 
     return prediction_dir / prediction_filename, report_dir / report_filename
 
@@ -241,7 +244,7 @@ def main() -> None:
     report_dir = project_root / "reports"
     prediction_dir.mkdir(parents=True, exist_ok=True)
     report_dir.mkdir(parents=True, exist_ok=True)
-    prediction_path, report_path = get_output_paths(project_root, args.prompt_version)
+    prediction_path, report_path = get_output_paths(project_root, args.prompt_version, args.split, args.limit)
 
     if not label_path.exists():
         print(f"라벨링 CSV 파일을 찾을 수 없습니다: {label_path}")
