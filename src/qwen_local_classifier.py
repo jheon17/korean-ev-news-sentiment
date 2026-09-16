@@ -229,7 +229,7 @@ def main() -> None:
         ],
     )
 
-    metrics = calculate_metrics(prediction_rows, split="dev")
+    metrics = calculate_metrics(prediction_rows, split=args.split)
     save_report(
         report_path,
         "7단계 Qwen 로컬 모델 평가 리포트",

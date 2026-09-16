@@ -375,7 +375,7 @@ def main() -> None:
         ],
     )
 
-    metrics = calculate_metrics(rows_for_output, split="dev")
+    metrics = calculate_metrics(rows_for_output, split=args.split)
     save_report(
         report_path,
         "7단계 OpenAI GPT API 평가 리포트",

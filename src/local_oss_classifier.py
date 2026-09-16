@@ -102,7 +102,7 @@ def main() -> None:
         ["article_id", "split", "gold_label", "pred_label", "confidence", "model", "title", "description"],
     )
 
-    metrics = calculate_metrics(prediction_rows, split="dev")
+    metrics = calculate_metrics(prediction_rows, split=args.split)
     save_report(
         report_path,
         "7단계 로컬 오픈소스 모델 평가 리포트",

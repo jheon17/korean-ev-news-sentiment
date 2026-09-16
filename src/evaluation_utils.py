@@ -19,11 +19,12 @@ def save_csv(csv_path: Path, rows: list[dict], fieldnames: list[str]) -> None:
 
 
 def calculate_metrics(rows: list[dict], split: str = "dev") -> dict:
+    selected_rows = rows if split == "all" else [row for row in rows if row.get("split") == split]
+
     valid_rows = [
         row
-        for row in rows
-        if row.get("split") == split
-        and row.get("gold_label") in LABELS
+        for row in selected_rows
+        if row.get("gold_label") in LABELS
         and row.get("pred_label") in LABELS
     ]
 
@@ -55,7 +56,7 @@ def calculate_metrics(rows: list[dict], split: str = "dev") -> dict:
         f1_values.append(f1)
 
     correct_count = sum(1 for row in valid_rows if row["gold_label"] == row["pred_label"])
-    failed_count = sum(1 for row in rows if row.get("split") == split and row.get("pred_label") not in LABELS)
+    failed_count = sum(1 for row in selected_rows if row.get("pred_label") not in LABELS)
     accuracy = correct_count / len(valid_rows) if valid_rows else 0
     macro_f1 = sum(f1_values) / len(f1_values) if f1_values else 0
     prediction_counter = Counter(row["pred_label"] for row in valid_rows)
